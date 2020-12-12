@@ -48,7 +48,7 @@ data {
 parameters {
   real<lower=0> omega;
   real<lower=0> mu1;
-  real rho;                                      // = log(alpha + beta)
+  real rho;                                      // = log((alpha+beta) / (1-(alpha+beta)))
   real kappa;                                    // = log(alpha / beta)
   real<lower=0> theta;                           
   real<lower=0> sigma_year;
@@ -57,8 +57,8 @@ parameters {
   vector[N_holiday] epsilon_holiday;
 }
 transformed parameters {
-  real alpha;
   real beta;
+  real alpha;
   vector[N] mu;
   vector[N] phi;
   vector[N] mu_y;
@@ -73,9 +73,9 @@ transformed parameters {
 
   phi = exp(phi_year[day_year] + phi_holiday[holiday]);
 
-  // Follows from rho being log(alpha+beta); and kappa being log(alpha/beta)
-  alpha = exp(rho) / (1+exp(rho)) / (1+exp(kappa));
-  beta = exp(rho) / (1+exp(rho)) * exp(kappa) / (1+exp(kappa));
+  // Follows from the definitions of rho and kappa
+  beta = exp(rho) / ((1+exp(rho)) * (1+exp(kappa)));  
+  alpha = beta * exp(kappa);
 
   // Residual trend component 
   mu[1] = mu1;
@@ -92,7 +92,7 @@ model {
   rho ~ normal(0, 1.6);                          // (Roughly flat on the [0, 1] scale)
   kappa ~ normal(0, 1.6);                        // (Roughly flat on the [0, 1] scale)
   theta ~ gamma(2, 0.1);                         // Overdispersion term
-  sigma_year ~ normal(0, 0.02);                  // Scale parameters
+  sigma_year ~ normal(0, 0.10);                  // Scale parameters
   sigma_holiday ~ normal(0, 3);
   epsilon_year ~ std_normal();                   // Innovations
   epsilon_holiday ~ std_normal();
