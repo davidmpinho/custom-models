@@ -22,13 +22,38 @@ following changes and extensions:
 
 * **Bayesian structural time series**. I base this on the code of 
 [Phalen](https://peterphalen.github.io/ceasefire/bsts). I
-optimized it and simplified it. The model struggles with larger samples (>>2000),
-but it tends to be better when doing inference.
+optimized it and simplified it. The model struggles with larger samples 
+(>>2000), but tends to be better when doing inference.
+
+## Reparameterizations
+
+* **Student-t**: this is different from the reparameterization from the 
+[Stan User's guide](Reparameterization). In my case, one parameter sets 
+the standard deviation of the whole distribution, while the other one 
+sets (what would be) the standard deviation of a standard student-t, 
+which maps directly to the parameter nu.
+With this, the problematic posterior is (mostly) gone, though there is  
+still see so. 
+* **Beta and alpha parameters in GARCH/ARCP models**: this is the one I
+mentioned in the previous section. Here I eliminate all the unrelated code. 
 
 ## Future goals
 
-* Add generated quantities block to all models (to do posterior predictive
-checks and generate predictions). 
+* "Default" splines for regression. Currently, that I know of, there is
+no easy way to use penalized splines in a principled way. 
+[Kharratzadeh](https://mc-stan.org/users/documentation/case-studies/splines_in_stan.html)
+has shown how to do this to some extent, but I see some issues:
+  * indexes and knot locations need to be specified outside of the
+  code itself in a very manual way;
+  * there is no principled way of setting knots; we could use 
+  many of them to get an overparameterized model and then regularize, but...
+  * ...using too many knots is slow, and the priors have to be adapted to the
+  number of knots. 
+
+* Hierarchical splines. The idea is to take the simple "default" splines and
+allow deviations from them with a hierarchical structure. Check the work 
+of Dr. Gavin Simpson on this. 
+
 
 * For the ARCP/ARCNG model:
     - Let the unconditional mean ("omega") vary through time to allow for
@@ -61,6 +86,20 @@ checks and generate predictions).
       missing proceed as normal; if it is missing use the expectation (which is
       easy to compute, there is no need to add another set of parameters to estimate
       missing variables).
+      
+* For time series, model events (e.g., days before/after Christmas).
+This is mostly 'feature engineering' -- indexes 1, 2, ..., n/2-1 are 
+the days before an event, day n/2 is the event, and n/2+1, ..., n are the 
+days after the event. I think I only need to have separate scales for the 
+days before and after. That said, if there are issues of identifiability, 
+either restrict the number of days that are being modelled (probably necessary
+anyways because of the factor model assumptions), or add a positive 
+(and negative) 'slope' to the random walk process in the days before 
+(and after). 
+
+* Factor model (yes, again) for survival analysis. Just restrict the 
+differences to be negative and model them on the log scale. Mind the 
+censoring, though.  
 
 * For time series more generally, apply what I learned with ARC model to ARMA
 models. The motivation is to have something like 
@@ -73,22 +112,6 @@ work well enough in most cases but are very limiting) and black-box models like
 neural networks or tree-based models (which do not even work that well most of
 the time).
 
-* Gaussian random field approximation with splines (i.e., for spatial data).
-Like before, the motivation is to have a middle term between the
-classical approach (estimate a full covariance matrix) and the black-box
-algorithm approach. 
-
-* "Default" splines for regression. Currently, that I know of, there is no easy
-way to use p-splines (penalized splines) in typical regression problems where
-there are many variables and interactions that are plausibly non-linear.
-[Kharratzadeh](https://mc-stan.org/users/documentation/case-studies/splines_in_stan.html)
-has shown how to do this to some extent, but the indexes and knot locations
-have to be specified outside of the code itself in a very manual way. I would
-like something that is about as easy to fit as polynomial regression, while
-also allowing for regularization (and not having the drawbacks of polynomial
-regression in general). 
-
-* Hierarchical splines. The idea is to take the simple "default" splines and
-allow deviations from them with a hierarchical structure. 
-
+* Add generated quantities block to all models (to do posterior predictive
+checks and generate predictions). 
  
