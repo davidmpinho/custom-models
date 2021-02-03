@@ -6,7 +6,7 @@ extended.
 
 ## Models currently implemented 
 
-* **Autoregressive Conditional Poisson/Negative-Binomial (ARCP/ARCNG)**,
+* [Autoregressive Conditional Poisson/Negative-Binomial (ARCP/ARCNG)](https://github.com/davidmpinho/custom-models/blob/main/time_series/autoregressive_conditional.stan),
  which works similarly to GARCH models, but for counts instead of squared
 observations).  The advantage of this model over structural time series is that
 it only needs 2-4 parameters to model the 'residual' component of a time series
@@ -20,7 +20,7 @@ following changes and extensions:
       estimate, which makes the use of variational inference more viable.
       (The reparameterizations can also be applied to GARCH models.)
 
-* **Bayesian structural time series**. I base this on the code of 
+* [Bayesian structural time series](https://github.com/davidmpinho/custom-models/blob/main/time_series/bayes_state_space.stan). I base this on the code of 
 [Phalen](https://peterphalen.github.io/ceasefire/bsts). I
 optimized it and simplified it. The model struggles with larger samples 
 (>>2000), but tends to be better when doing inference.
