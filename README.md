@@ -4,7 +4,29 @@ These are some of the models I implemented in [Stan](https://mc-stan.org/),
 partly for easy reference, and partly to share models that I have developed or
 extended.
 
+Feel free to ask me questions or make pull requests.
+
 ## Models currently implemented 
+
+### Regression
+
+* [Fast piecewise linear function (similar to first-degree splines)](https://github.com/davidmpinho/custom-models/blob/main/regression/fast_1d_splines.stan).
+The objective with these is to specify a large number of knots (>30) to approximate a smooth function. When using many knots, it's faster
+than trying to do it with [Kharratzadeh's](https://mc-stan.org/users/documentation/case-studies/splines_in_stan.html) spline implementation because the
+coefficients at the knots are estimated in an identical way Bayesian structural time series models, with points between parameters being interpolated 
+in a similar way to first-degree splines. This scales better and is particularly advantageous when setting priors: there is a more intuitive
+relationship between the local and global flexibilities of the function because, a priori, it behaves like a random walk. 
+In my particular implementation, I've made the priors 
+(mostly) invariant to changes in the number of knots, such that, e.g., sigma=0.5 is equal to a change of 0.5 in Y for every 1 standard deviation change in X. 
+The disadvantage of this method is that interpolation to values outside the range is not really possible (but that's a tricky subject for every model anyways). 
+It also doesn't work very well with exponential relationships because the piecewise slopes have (on average) a constant 'rate of change', and that causes 
+overfitting in the ranges of values where Y is relatively closer to zero. You can fix that by just exponentiating phi if Y > 0. I tried to find a more 
+general solution, one that would work when Y has negative values. Because I like this piecewise linear function idea, I put a piecewise linear function inside 
+my piecewise linear function: the flexibility of the spline is allowed to change over the range of X in an exponential way
+([fast_1d_splines_exp.stan](https://github.com/davidmpinho/custom-models/blob/main/regression/fast_1d_splines.stan)). Seems 
+to take ~50% longer to fit on toy data sets. But I haven't really tested this, so proceed with caution (always!).
+
+### Time series
 
 * [Autoregressive Conditional Poisson/Negative-Binomial (ARCP/ARCNG)](https://github.com/davidmpinho/custom-models/blob/main/time_series/autoregressive_conditional.stan),
  which works similarly to GARCH models, but for counts instead of squared
@@ -12,7 +34,7 @@ observations).  The advantage of this model over structural time series is that
 it only needs 2-4 parameters to model the 'residual' component of a time series
 -- the component that is (ideally) stationary and cannot be explained away by
 other covariates.  This model was originally developed by 
-[Heinen's (2003)](http://dx.doi.org/10.2139/ssrn.1117187) article.  I added the
+[Heinen's (2003)](http://dx.doi.org/10.2139/ssrn.1117187) article. I added the
 following changes and extensions:
     - Allow for complex multiplicative seasonality and external predictors
       (i.e., exogenous terms). 
@@ -22,8 +44,9 @@ following changes and extensions:
 
 * [Bayesian structural time series](https://github.com/davidmpinho/custom-models/blob/main/time_series/bayes_state_space.stan). I base this on the code of 
 [Phalen](https://peterphalen.github.io/ceasefire/bsts). I
-optimized it and simplified it. The model struggles with larger samples 
-(>>2000), but tends to be better when doing inference.
+optimized it and simplified it. The model struggles with larger samples (>>2000) when using
+HMC, but tends to be more robust when doing inference in general problems -- there are no strong assumptions
+about how the latent state should evolve.
 
 ## Reparameterizations
 
@@ -36,6 +59,7 @@ With this, the problematic posterior is (mostly) gone, though there is
 still see so. 
 * **Beta and alpha parameters in GARCH/ARCP models**: this is the one I
 mentioned in the previous section. Here I eliminate all the unrelated code. 
+
 
 ## Future goals
 
