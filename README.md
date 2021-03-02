@@ -55,8 +55,8 @@ about how the latent state should evolve.
 the standard deviation of the whole distribution, while the other one 
 sets (what would be) the standard deviation of a standard student-t, 
 which maps directly to the parameter nu.
-With this, the problematic posterior is (mostly) gone, though there is  
-still see so. 
+With this, the problematic posterior is (mostly) gone, though you tend to see
+one of the parameters being a bit more long-tailed. 
 * **Beta and alpha parameters in GARCH/ARCP models**: this is the one I
 mentioned in the previous section. Here I eliminate all the unrelated code. 
 
