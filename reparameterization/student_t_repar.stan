@@ -8,6 +8,7 @@ parameters {
   // kappa = sqrt(nu / (nu-2)) - 1
   real<lower=0> theta;                    // Standard deviation of the student_t
   real<lower=0> kappa;                    // Standard deviation minus 1 of student_t when sigma=1,
+  // TODO: replace kappa with nu and then set a prior on nu instead and then solve for kappa to set sigma  
   real beta;
 }
 transformed parameters {
@@ -15,7 +16,7 @@ transformed parameters {
   real<lower=0> sigma; 
   real<lower=2> nu; 
   
-  sigma = theta / (kappa+1);
+  sigma = theta / (kappa+1);               
   nu = 2 * square(kappa+1) / (square(kappa+1) - 1);
   mu_y = beta * x;
 }
