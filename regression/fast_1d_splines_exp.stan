@@ -14,6 +14,7 @@ functions {
   }  
 } 
 data {
+  // TODO: delete any code related to the student-t reparameterization
   int<lower=0> N;    
   int<lower=0> M;                                   // Number of predictors (on X)
   int<lower=0> N_p;                                 // Number of partitions 
