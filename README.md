@@ -50,14 +50,14 @@ about how the latent state should evolve.
 
 ## Reparameterizations
 
-* **Student-t**: this is different from the reparameterization from the 
+* [Student-t](https://github.com/davidmpinho/custom-models/blob/main/reparameterization/student_t_repar.stan): this is different from the reparameterization from the 
 [Stan User's guide](Reparameterization). In my case, one parameter sets 
 the standard deviation of the whole distribution, while the other one 
 sets (what would be) the standard deviation of a standard student-t, 
 which maps directly to the parameter nu.
 With this, the problematic posterior is (mostly) gone, though you tend to see
 one of the parameters being a bit more long-tailed. 
-* **Beta and alpha parameters in GARCH/ARCP models**: this is the one I
+* [Beta and alpha parameters in GARCH/ARCP models](https://github.com/davidmpinho/custom-models/blob/main/reparameterization/garch_arc_repar.stan): this is the one I
 mentioned in the previous section. Here I eliminate all the unrelated code. 
 
 
