@@ -7,7 +7,6 @@ functions {
   }  
 } 
 data {
-  // TODO: delete any code related to the student-t reparameterization 
   int<lower=0> N;    
   int<lower=0> M;                                   // Number of predictors (on X)
   int<lower=0> N_p;                                 // Number of partitions 
@@ -25,8 +24,8 @@ transformed data {
   
   for (j in 1:M) {
     partition_size[j] = (partition_knots[2, j] - partition_knots[1, j]);  
-    pct_p1[ , j] = ((X[ , j] - partition_knots[partition[ , j], j]) 
-                      / partition_size[j]); 
+    pct_p1[ , j] = ((X[ , j] - partition_knots[partition[ , j], j]
+                    ) / partition_size[j]); 
     pct_p2[ , j] = 1 - pct_p1[ , j];
     for (i in 1:N)
         partition_plus_1[i, j] = partition[i, j] + 1;
@@ -35,16 +34,13 @@ transformed data {
 }
 parameters {
   real alpha;
-  real<lower=0> theta;                              // Parameter for student_t reparameterization 
-  real<lower=0> kappa;                              // Parameter for student_t reparameterization 
-  real<lower=0> sigma_partition[M];                 // Scale for seasonal component 
+  real<lower=0> sigma; 
+  real<lower=0> sigma_partition[M];              
   matrix[N_p+1, M] epsilon_partition;
 }
 transformed parameters {
   vector[N] mu_y;
   matrix[N_p+1, M] phi_partition;
-  real<lower=0> sigma; 
-  real<lower=2> nu; 
   
   mu_y = rep_vector(alpha, N);
   for (j in 1:M) {
@@ -54,18 +50,14 @@ transformed parameters {
     mu_y += (phi_partition[partition[ , j], j] .* pct_p2[ , j] 
                + phi_partition[partition_plus_1[ , j], j] .* pct_p1[ , j]);
   }
-  sigma = theta/(kappa+2);
-  nu = 2 * square(kappa+2) / (square(kappa+2) - 1);
 }
 model {
-  alpha ~ normal(0, 1);                             // Constant
-  theta ~ normal(0, 1);                             // The standard deviation of the residuals
-  kappa ~ normal(-2.68, 0.68);                      // Identical to setting nu ~ gamma(2, 0.1)  
-  sigma_partition ~ normal(0, 0.5);                 // This is (mostly) invariant to the number of partitions
+  alpha ~ normal(0, 0.5);                        // Constant
+  sigma ~ normal(0, 0.5);
+  sigma_partition ~ normal(0, 0.5);              // This is (approximately) invariant to the number of partitions
   for (j in 1:M) {
     epsilon_partition[ , j] ~ std_normal();
-    phi_partition[ , j] ~ normal(0, 5);
   }
-  y ~ student_t(nu, mu_y, sigma);                   // Likelihood 
+  y ~ normal(mu_y, sigma);                       // Likelihood 
 }
 
