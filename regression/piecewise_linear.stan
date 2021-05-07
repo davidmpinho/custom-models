@@ -12,7 +12,7 @@ data {
   int<lower=0> N_p;                                 // Number of partitions 
   real y[N];                                        // Outcome 
   matrix[N, M] X;
-  int<lower=1,upper=N_p> partition[N, M];           // Index for the day of year
+  int<lower=1,upper=N_p> partition[N, M];           // Index for the knots
   matrix[N_p+1, M] partition_knots;                 // These should be equally spaced
 }
 transformed data {
