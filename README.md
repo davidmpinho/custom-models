@@ -10,7 +10,7 @@ Feel free to ask me questions or make pull requests.
 
 ### Regression
 
-* [Fast piecewise linear function (similar to first-degree splines)](https://github.com/davidmpinho/custom-models/blob/main/regression/fast_1d_splines.stan).
+* [Fast piecewise linear function (similar to first-degree splines)](https://github.com/davidmpinho/custom-models/blob/main/regression/piecewise_linear.stan).
 The objective with these is to specify a large number of knots (>30) to approximate a smooth function. When using many knots, it's faster
 than trying to do it with [Kharratzadeh's](https://mc-stan.org/users/documentation/case-studies/splines_in_stan.html) spline implementation because the
 coefficients at the knots are estimated in an identical way Bayesian structural time series models, with points between parameters being interpolated 
@@ -23,7 +23,7 @@ It also doesn't work very well with exponential relationships because the piecew
 overfitting in the ranges of values where Y is relatively closer to zero. You can fix that by just exponentiating phi if Y > 0. I tried to find a more 
 general solution, one that would work when Y has negative values. Because I like this piecewise linear function idea, I put a piecewise linear function inside 
 my piecewise linear function: the flexibility of the spline is allowed to change over the range of X in an exponential way
-([fast_1d_splines_exp.stan](https://github.com/davidmpinho/custom-models/blob/main/regression/fast_1d_splines.stan)). Seems 
+([fast_1d_splines_exp.stan](https://github.com/davidmpinho/custom-models/blob/main/regression/piecewise_linear_exp.stan)). Seems 
 to take ~50% longer to fit on toy data sets. But I haven't really tested this, so proceed with caution (always!).
 
 ### Time series
