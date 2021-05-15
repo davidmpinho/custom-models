@@ -20,5 +20,5 @@ model {
   theta ~ normal(0, 1);              
   log_nu ~ normal(2.57, 0.8);           // Roughly implies: exp(log_nu) ~ gamma(2, 0.1)
   beta ~ normal(0, 0.5);             
-  y ~ student_t(nu, mu_y, sigma);    
+  y ~ student_t(exp(log_nu), mu_y, sigma);    
 }
