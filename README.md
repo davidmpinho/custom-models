@@ -22,6 +22,10 @@ general solution, one that would work when Y has negative values: the flexibilit
 ([fast_1d_splines_exp.stan](https://github.com/davidmpinho/custom-models/blob/main/regression/piecewise_linear_exp.stan)). Seems 
 to take ~50% longer to fit on toy data sets. But I haven't really tested this, so proceed with caution (always!).
 
+* [Hierarchical models and splines with missing data](https://github.com/davidmpinho/custom-models/blob/main/regression/auto_hierarchical_splines.stan). 
+Most simple regression problems have a mixture of continuous and discrete data with a lot of missingness -- this model addresses that. The missingness
+is addressed in a way that may invalidate it from having a causal meaning. 
+
 ### Time series
 
 * [Autoregressive Conditional Poisson/Negative-Binomial (ARCP/ARCNG)](https://github.com/davidmpinho/custom-models/blob/main/time_series/autoregressive_conditional.stan),
